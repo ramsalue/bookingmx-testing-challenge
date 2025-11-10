@@ -11,7 +11,7 @@ This project implements a hotel reservation system for BookingMx with a focus on
 
 The primary objective is to demonstrate proficiency in:
 - Writing comprehensive unit tests using JUnit 5
-- Achieving 91% code coverage using JaCoCo
+- Achieving 90% code coverage using JaCoCo
 - Implementing best practices in test-driven development
 - Creating maintainable and well-documented code
 
@@ -253,10 +253,6 @@ bookingmx-testing-challenge/
 │           └── index.html (coverage report)
 ├── screenshots/
 │   └── sprint1/
-│       ├── phase1/ (setup)
-│       ├── phase2/ (domain model)
-│       ├── ...
-│       └── phase9/ (test coverage)
 ├── pom.xml
 ├── README.md
 └── .gitignore
