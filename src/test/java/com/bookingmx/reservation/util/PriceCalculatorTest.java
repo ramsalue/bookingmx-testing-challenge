@@ -401,4 +401,26 @@ class PriceCalculatorTest {
             PriceCalculator.getPriceBreakdown(RoomType.SINGLE, -1);
         });
     }
+
+    @Test
+    @DisplayName("Should format price breakdown as string WITH discount")
+    void testPriceBreakdownToString_WithDiscount() {
+        // Arrange
+        PriceCalculator.PriceBreakdown breakdown =
+                PriceCalculator.getPriceBreakdown(RoomType.SINGLE, 7);
+
+        // Act
+        String breakdownString = breakdown.toString();
+
+        // Assert
+        assertNotNull(breakdownString);
+        assertTrue(breakdownString.contains("Price Breakdown"));
+        assertTrue(breakdownString.contains("Base Price"));
+
+        assertTrue(breakdownString.contains("Discount"));
+        assertTrue(breakdownString.contains("Subtotal"));
+
+        assertTrue(breakdownString.contains("Tax"));
+        assertTrue(breakdownString.contains("Total"));
+    }
 }

@@ -528,4 +528,56 @@ class ReservationTest {
             reservation.setTotalPrice(-100.00);
         });
     }
+
+    @Test
+    @DisplayName("Should set and get status")
+    void testSetAndGetStatus() throws InvalidReservationException {
+        // Arrange
+        Reservation reservation = new Reservation(VALID_NAME, VALID_EMAIL, VALID_CHECK_IN, VALID_CHECK_OUT, VALID_ROOM_TYPE);
+
+        // Act
+        reservation.setStatus(ReservationStatus.CHECKED_IN);
+
+        // Assert
+        assertEquals(ReservationStatus.CHECKED_IN, reservation.getStatus());
+    }
+
+    @Test
+    @DisplayName("Should set and get creation date")
+    void testSetAndGetCreatedAt() throws InvalidReservationException {
+        // Arrange
+        Reservation reservation = new Reservation(VALID_NAME, VALID_EMAIL, VALID_CHECK_IN, VALID_CHECK_OUT, VALID_ROOM_TYPE);
+        LocalDate newDate = LocalDate.now().minusDays(1);
+
+        // Act
+        reservation.setCreatedAt(newDate);
+
+        // Assert
+        assertEquals(newDate, reservation.getCreatedAt());
+    }
+
+    @Test
+    @DisplayName("Should set and get ID")
+    void testSetAndGetId() throws InvalidReservationException {
+        // Arrange
+        Reservation reservation = new Reservation(VALID_NAME, VALID_EMAIL, VALID_CHECK_IN, VALID_CHECK_OUT, VALID_ROOM_TYPE);
+        String newId = "test-id-123";
+
+        // Act
+        reservation.setId(newId);
+
+        // Assert
+        assertEquals(newId, reservation.getId());
+    }
+
+    @Test
+    @DisplayName("Should return 0 for price and nights if dates are null in empty constructor")
+    void testCalculateMethodsWithNulls() {
+        // Arrange
+        Reservation reservation = new Reservation();
+
+        // Act & Assert
+        assertEquals(0, reservation.calculateNumberOfNights());
+        assertEquals(0.0, reservation.calculateTotalPrice(), 0.01);
+    }
 }

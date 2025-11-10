@@ -1,8 +1,0 @@
-com\bookingmx\reservation\util\AvailabilityCheckerTest.class
-com\bookingmx\reservation\util\DateValidatorTest.class
-com\bookingmx\reservation\util\AvailabilityCheckerTest$1.class
-com\bookingmx\reservation\model\ReservationTest.class
-com\bookingmx\reservation\repository\InMemoryReservationRepositoryTest.class
-com\bookingmx\reservation\service\ReservationServiceTest.class
-com\bookingmx\reservation\model\ReservationManualTest.class
-com\bookingmx\reservation\util\PriceCalculatorTest.class
