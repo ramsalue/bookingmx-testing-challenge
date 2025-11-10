@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DateValidator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookingmx-testing-challenge</a> &gt; <a href="index.source.html" class="el_package">com.bookingmx.reservation.util</a> &gt; <span class="el_source">DateValidator.java</span></div><h1>DateValidator.java</h1><pre class="source lang-java linenums">package com.bookingmx.reservation.util;
+
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+
+/**
+ * Utility class for validating dates in the reservation system.
+ * This class provides static methods for common date validation operations
+ * such as checking if dates are in the past, validating date ranges,
+ * and ensuring business rules are met.
+ *
+ * All methods are static and the class cannot be instantiated.
+ *
+ * @author BookingMx Development Team
+ * @version 1.0.0
+ */
+public class DateValidator {
+
+    /**
+     * Minimum number of nights required for a reservation.
+     * This constant defines the business rule for minimum stay duration.
+     */
+    public static final int MINIMUM_NIGHTS = 1;
+
+    /**
+     * Maximum number of days in advance a reservation can be made.
+     * This constant limits how far into the future reservations can be created.
+     */
+    public static final int MAXIMUM_ADVANCE_DAYS = 365;
+
+    /**
+     * Private constructor to prevent instantiation.
+     * This class should only be used through its static methods.
+     */
+<span class="fc" id="L35">    private DateValidator() {</span>
+<span class="fc" id="L36">        throw new UnsupportedOperationException(&quot;DateValidator is a utility class and cannot be instantiated&quot;);</span>
+    }
+
+    /**
+     * Checks if a given date is in the past (before today).
+     *
+     * @param date the date to check
+     * @return true if the date is before today, false otherwise
+     * @throws IllegalArgumentException if date is null
+     */
+    public static boolean isPastDate(LocalDate date) {
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        if (date == null) {</span>
+<span class="fc" id="L48">            throw new IllegalArgumentException(&quot;Date cannot be null&quot;);</span>
+        }
+<span class="fc" id="L50">        return date.isBefore(LocalDate.now());</span>
+    }
+
+    /**
+     * Checks if a given date is today.
+     *
+     * @param date the date to check
+     * @return true if the date is today, false otherwise
+     * @throws IllegalArgumentException if date is null
+     */
+    public static boolean isToday(LocalDate date) {
+<span class="pc bpc" id="L61" title="1 of 2 branches missed.">        if (date == null) {</span>
+<span class="nc" id="L62">            throw new IllegalArgumentException(&quot;Date cannot be null&quot;);</span>
+        }
+<span class="fc" id="L64">        return date.isEqual(LocalDate.now());</span>
+    }
+
+    /**
+     * Checks if a given date is in the future (after today).
+     *
+     * @param date the date to check
+     * @return true if the date is after today, false otherwise
+     * @throws IllegalArgumentException if date is null
+     */
+    public static boolean isFutureDate(LocalDate date) {
+<span class="pc bpc" id="L75" title="1 of 2 branches missed.">        if (date == null) {</span>
+<span class="nc" id="L76">            throw new IllegalArgumentException(&quot;Date cannot be null&quot;);</span>
+        }
+<span class="fc" id="L78">        return date.isAfter(LocalDate.now());</span>
+    }
+
+    /**
+     * Validates that a check-in date is valid for a new reservation.
+     * A valid check-in date must be today or in the future, and not exceed
+     * the maximum advance booking period.
+     *
+     * @param checkInDate the check-in date to validate
+     * @return true if the check-in date is valid, false otherwise
+     * @throws IllegalArgumentException if checkInDate is null
+     */
+    public static boolean isValidCheckInDate(LocalDate checkInDate) {
+<span class="fc bfc" id="L91" title="All 2 branches covered.">        if (checkInDate == null) {</span>
+<span class="fc" id="L92">            throw new IllegalArgumentException(&quot;Check-in date cannot be null&quot;);</span>
+        }
+
+        // Check if date is not in the past
+<span class="fc bfc" id="L96" title="All 2 branches covered.">        if (checkInDate.isBefore(LocalDate.now())) {</span>
+<span class="fc" id="L97">            return false;</span>
+        }
+
+        // Check if date is not too far in the future
+<span class="fc" id="L101">        long daysInAdvance = ChronoUnit.DAYS.between(LocalDate.now(), checkInDate);</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        return daysInAdvance &lt;= MAXIMUM_ADVANCE_DAYS;</span>
+    }
+
+    /**
+     * Validates that a check-out date is after the check-in date.
+     * The check-out must be at least one day after check-in to meet
+     * the minimum nights requirement.
+     *
+     * @param checkInDate the check-in date
+     * @param checkOutDate the check-out date
+     * @return true if check-out is validly after check-in, false otherwise
+     * @throws IllegalArgumentException if either date is null
+     */
+    public static boolean isValidCheckOutDate(LocalDate checkInDate, LocalDate checkOutDate) {
+<span class="fc bfc" id="L116" title="All 2 branches covered.">        if (checkInDate == null) {</span>
+<span class="fc" id="L117">            throw new IllegalArgumentException(&quot;Check-in date cannot be null&quot;);</span>
+        }
+<span class="fc bfc" id="L119" title="All 2 branches covered.">        if (checkOutDate == null) {</span>
+<span class="fc" id="L120">            throw new IllegalArgumentException(&quot;Check-out date cannot be null&quot;);</span>
+        }
+
+<span class="fc" id="L123">        return checkOutDate.isAfter(checkInDate);</span>
+    }
+
+    /**
+     * Validates that a date range meets the minimum nights requirement.
+     *
+     * @param checkInDate the check-in date
+     * @param checkOutDate the check-out date
+     * @return true if the date range meets minimum nights, false otherwise
+     * @throws IllegalArgumentException if either date is null
+     */
+    public static boolean meetsMinimumNights(LocalDate checkInDate, LocalDate checkOutDate) {
+<span class="pc bpc" id="L135" title="2 of 4 branches missed.">        if (checkInDate == null || checkOutDate == null) {</span>
+<span class="nc" id="L136">            throw new IllegalArgumentException(&quot;Dates cannot be null&quot;);</span>
+        }
+
+<span class="fc" id="L139">        long nights = ChronoUnit.DAYS.between(checkInDate, checkOutDate);</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">        return nights &gt;= MINIMUM_NIGHTS;</span>
+    }
+
+    /**
+     * Validates a complete date range for a reservation.
+     * This method combines all date validation rules:
+     * - Check-in date must be valid (not in past, not too far in future)
+     * - Check-out date must be after check-in date
+     * - Date range must meet minimum nights requirement
+     *
+     * @param checkInDate the check-in date to validate
+     * @param checkOutDate the check-out date to validate
+     * @return true if the entire date range is valid, false otherwise
+     * @throws IllegalArgumentException if either date is null
+     */
+    public static boolean isValidDateRange(LocalDate checkInDate, LocalDate checkOutDate) {
+<span class="pc bpc" id="L156" title="2 of 4 branches missed.">        if (checkInDate == null || checkOutDate == null) {</span>
+<span class="nc" id="L157">            throw new IllegalArgumentException(&quot;Dates cannot be null&quot;);</span>
+        }
+
+<span class="fc bfc" id="L160" title="All 2 branches covered.">        return isValidCheckInDate(checkInDate)</span>
+<span class="pc bpc" id="L161" title="1 of 2 branches missed.">                &amp;&amp; isValidCheckOutDate(checkInDate, checkOutDate)</span>
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">                &amp;&amp; meetsMinimumNights(checkInDate, checkOutDate);</span>
+    }
+
+    /**
+     * Calculates the number of nights between two dates.
+     *
+     * @param checkInDate the check-in date
+     * @param checkOutDate the check-out date
+     * @return the number of nights as a long value
+     * @throws IllegalArgumentException if either date is null or checkout is before checkin
+     */
+    public static long calculateNights(LocalDate checkInDate, LocalDate checkOutDate) {
+<span class="fc bfc" id="L174" title="All 4 branches covered.">        if (checkInDate == null || checkOutDate == null) {</span>
+<span class="fc" id="L175">            throw new IllegalArgumentException(&quot;Dates cannot be null&quot;);</span>
+        }
+
+<span class="fc bfc" id="L178" title="All 2 branches covered.">        if (checkOutDate.isBefore(checkInDate)) {</span>
+<span class="fc" id="L179">            throw new IllegalArgumentException(&quot;Check-out date cannot be before check-in date&quot;);</span>
+        }
+
+<span class="fc" id="L182">        return ChronoUnit.DAYS.between(checkInDate, checkOutDate);</span>
+    }
+
+    /**
+     * Checks if two date ranges overlap.
+     * This is useful for checking room availability - if a room has an existing
+     * reservation, we need to ensure new reservations don't overlap.
+     *
+     * @param start1 start date of first range
+     * @param end1 end date of first range
+     * @param start2 start date of second range
+     * @param end2 end date of second range
+     * @return true if the date ranges overlap, false otherwise
+     * @throws IllegalArgumentException if any date is null
+     */
+    public static boolean doDateRangesOverlap(LocalDate start1, LocalDate end1,
+                                              LocalDate start2, LocalDate end2) {
+<span class="fc bfc" id="L199" title="All 8 branches covered.">        if (start1 == null || end1 == null || start2 == null || end2 == null) {</span>
+<span class="fc" id="L200">            throw new IllegalArgumentException(&quot;Dates cannot be null&quot;);</span>
+        }
+
+        // Two ranges overlap if one starts before the other ends
+        // and the other starts before the first ends
+<span class="fc bfc" id="L205" title="All 4 branches covered.">        return start1.isBefore(end2) &amp;&amp; start2.isBefore(end1);</span>
+    }
+
+    /**
+     * Gets a descriptive validation message for invalid date ranges.
+     * This method provides user-friendly error messages for different
+     * date validation failures.
+     *
+     * @param checkInDate the check-in date to validate
+     * @param checkOutDate the check-out date to validate
+     * @return a descriptive error message, or null if dates are valid
+     */
+    public static String getDateValidationMessage(LocalDate checkInDate, LocalDate checkOutDate) {
+<span class="fc bfc" id="L218" title="All 2 branches covered.">        if (checkInDate == null) {</span>
+<span class="fc" id="L219">            return &quot;Check-in date is required&quot;;</span>
+        }
+
+<span class="fc bfc" id="L222" title="All 2 branches covered.">        if (checkOutDate == null) {</span>
+<span class="fc" id="L223">            return &quot;Check-out date is required&quot;;</span>
+        }
+
+<span class="fc bfc" id="L226" title="All 2 branches covered.">        if (isPastDate(checkInDate)) {</span>
+<span class="fc" id="L227">            return &quot;Check-in date cannot be in the past&quot;;</span>
+        }
+
+<span class="fc" id="L230">        long daysInAdvance = ChronoUnit.DAYS.between(LocalDate.now(), checkInDate);</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">        if (daysInAdvance &gt; MAXIMUM_ADVANCE_DAYS) {</span>
+<span class="fc" id="L232">            return String.format(&quot;Check-in date cannot be more than %d days in advance&quot;,</span>
+<span class="fc" id="L233">                    MAXIMUM_ADVANCE_DAYS);</span>
+        }
+
+<span class="fc bfc" id="L236" title="All 2 branches covered.">        if (!checkOutDate.isAfter(checkInDate)) {</span>
+<span class="fc" id="L237">            return &quot;Check-out date must be after check-in date&quot;;</span>
+        }
+
+<span class="fc" id="L240">        long nights = ChronoUnit.DAYS.between(checkInDate, checkOutDate);</span>
+<span class="pc bpc" id="L241" title="1 of 2 branches missed.">        if (nights &lt; MINIMUM_NIGHTS) {</span>
+<span class="nc" id="L242">            return String.format(&quot;Reservation must be for at least %d night(s)&quot;, MINIMUM_NIGHTS);</span>
+        }
+
+<span class="fc" id="L245">        return null; // No validation errors</span>
+    }
+
+    /**
+     * Formats a date range as a readable string.
+     *
+     * @param checkInDate the check-in date
+     * @param checkOutDate the check-out date
+     * @return a formatted string representing the date range
+     * @throws IllegalArgumentException if either date is null
+     */
+    public static String formatDateRange(LocalDate checkInDate, LocalDate checkOutDate) {
+<span class="pc bpc" id="L257" title="2 of 4 branches missed.">        if (checkInDate == null || checkOutDate == null) {</span>
+<span class="nc" id="L258">            throw new IllegalArgumentException(&quot;Dates cannot be null&quot;);</span>
+        }
+
+<span class="fc" id="L261">        long nights = calculateNights(checkInDate, checkOutDate);</span>
+<span class="fc" id="L262">        return String.format(&quot;%s to %s (%d night%s)&quot;,</span>
+                checkInDate,
+                checkOutDate,
+<span class="fc" id="L265">                nights,</span>
+<span class="pc bpc" id="L266" title="1 of 2 branches missed.">                nights == 1 ? &quot;&quot; : &quot;s&quot;);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

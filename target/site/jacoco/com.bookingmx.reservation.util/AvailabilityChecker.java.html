@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AvailabilityChecker.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookingmx-testing-challenge</a> &gt; <a href="index.source.html" class="el_package">com.bookingmx.reservation.util</a> &gt; <span class="el_source">AvailabilityChecker.java</span></div><h1>AvailabilityChecker.java</h1><pre class="source lang-java linenums">package com.bookingmx.reservation.util;
+
+import com.bookingmx.reservation.model.Reservation;
+import com.bookingmx.reservation.model.ReservationStatus;
+import com.bookingmx.reservation.model.RoomType;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * Utility class for checking room availability in the reservation system.
+ * This class handles all availability-related operations including checking
+ * for date conflicts, managing room inventory, and validating capacity.
+ *
+ * All methods are static and the class cannot be instantiated.
+ *
+ * Business Rules:
+ * - Each room type has a limited inventory
+ * - SINGLE: 10 rooms available
+ * - DOUBLE: 8 rooms available
+ * - SUITE: 5 rooms available
+ * - DELUXE: 3 rooms available
+ * - Only active reservations (CONFIRMED, CHECKED_IN) count against inventory
+ *
+ * @author BookingMx Development Team
+ * @version 1.0.0
+ */
+public class AvailabilityChecker {
+
+    /**
+     * Number of SINGLE rooms available in the hotel.
+     */
+    public static final int SINGLE_ROOM_CAPACITY = 10;
+
+    /**
+     * Number of DOUBLE rooms available in the hotel.
+     */
+    public static final int DOUBLE_ROOM_CAPACITY = 8;
+
+    /**
+     * Number of SUITE rooms available in the hotel.
+     */
+    public static final int SUITE_ROOM_CAPACITY = 5;
+
+    /**
+     * Number of DELUXE rooms available in the hotel.
+     */
+    public static final int DELUXE_ROOM_CAPACITY = 3;
+
+    /**
+     * Private constructor to prevent instantiation.
+     * This class should only be used through its static methods.
+     */
+<span class="fc" id="L54">    private AvailabilityChecker() {</span>
+<span class="fc" id="L55">        throw new UnsupportedOperationException(&quot;AvailabilityChecker is a utility class and cannot be instantiated&quot;);</span>
+    }
+
+    /**
+     * Gets the total capacity for a specific room type.
+     *
+     * @param roomType the type of room
+     * @return the total number of rooms available for this type
+     * @throws IllegalArgumentException if roomType is null
+     */
+    public static int getRoomCapacity(RoomType roomType) {
+<span class="fc bfc" id="L66" title="All 2 branches covered.">        if (roomType == null) {</span>
+<span class="fc" id="L67">            throw new IllegalArgumentException(&quot;Room type cannot be null&quot;);</span>
+        }
+
+<span class="pc bpc" id="L70" title="1 of 5 branches missed.">        switch (roomType) {</span>
+            case SINGLE:
+<span class="fc" id="L72">                return SINGLE_ROOM_CAPACITY;</span>
+            case DOUBLE:
+<span class="fc" id="L74">                return DOUBLE_ROOM_CAPACITY;</span>
+            case SUITE:
+<span class="fc" id="L76">                return SUITE_ROOM_CAPACITY;</span>
+            case DELUXE:
+<span class="fc" id="L78">                return DELUXE_ROOM_CAPACITY;</span>
+            default:
+<span class="nc" id="L80">                return 0;</span>
+        }
+    }
+
+    /**
+     * Checks if a reservation is active and should count against inventory.
+     * Only CONFIRMED and CHECKED_IN reservations are considered active.
+     *
+     * @param reservation the reservation to check
+     * @return true if the reservation is active, false otherwise
+     * @throws IllegalArgumentException if reservation is null
+     */
+    public static boolean isActiveReservation(Reservation reservation) {
+<span class="fc bfc" id="L93" title="All 2 branches covered.">        if (reservation == null) {</span>
+<span class="fc" id="L94">            throw new IllegalArgumentException(&quot;Reservation cannot be null&quot;);</span>
+        }
+
+<span class="fc" id="L97">        ReservationStatus status = reservation.getStatus();</span>
+<span class="fc bfc" id="L98" title="All 4 branches covered.">        return status == ReservationStatus.CONFIRMED ||</span>
+                status == ReservationStatus.CHECKED_IN;
+    }
+
+    /**
+     * Checks if two reservations have overlapping date ranges.
+     *
+     * @param reservation1 the first reservation
+     * @param reservation2 the second reservation
+     * @return true if the reservations overlap, false otherwise
+     * @throws IllegalArgumentException if either reservation is null
+     */
+    public static boolean doReservationsOverlap(Reservation reservation1, Reservation reservation2) {
+<span class="fc bfc" id="L111" title="All 4 branches covered.">        if (reservation1 == null || reservation2 == null) {</span>
+<span class="fc" id="L112">            throw new IllegalArgumentException(&quot;Reservations cannot be null&quot;);</span>
+        }
+
+<span class="fc" id="L115">        LocalDate start1 = reservation1.getCheckInDate();</span>
+<span class="fc" id="L116">        LocalDate end1 = reservation1.getCheckOutDate();</span>
+<span class="fc" id="L117">        LocalDate start2 = reservation2.getCheckInDate();</span>
+<span class="fc" id="L118">        LocalDate end2 = reservation2.getCheckOutDate();</span>
+
+<span class="fc" id="L120">        return DateValidator.doDateRangesOverlap(start1, end1, start2, end2);</span>
+    }
+
+    /**
+     * Filters a list of reservations to only include active ones for a specific room type.
+     *
+     * @param reservations the list of all reservations
+     * @param roomType the room type to filter by
+     * @return a list of active reservations for the specified room type
+     * @throws IllegalArgumentException if reservations list or roomType is null
+     */
+    public static List&lt;Reservation&gt; getActiveReservationsForRoomType(
+            List&lt;Reservation&gt; reservations, RoomType roomType) {
+<span class="fc bfc" id="L133" title="All 2 branches covered.">        if (reservations == null) {</span>
+<span class="fc" id="L134">            throw new IllegalArgumentException(&quot;Reservations list cannot be null&quot;);</span>
+        }
+<span class="fc bfc" id="L136" title="All 2 branches covered.">        if (roomType == null) {</span>
+<span class="fc" id="L137">            throw new IllegalArgumentException(&quot;Room type cannot be null&quot;);</span>
+        }
+
+<span class="fc" id="L140">        return reservations.stream()</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">                .filter(r -&gt; r.getRoomType() == roomType)</span>
+<span class="fc" id="L142">                .filter(AvailabilityChecker::isActiveReservation)</span>
+<span class="fc" id="L143">                .collect(Collectors.toList());</span>
+    }
+
+    /**
+     * Counts how many rooms of a specific type are reserved for overlapping dates.
+     *
+     * @param existingReservations list of all existing reservations
+     * @param roomType the type of room to check
+     * @param checkInDate the check-in date for the new reservation
+     * @param checkOutDate the check-out date for the new reservation
+     * @return the number of rooms already reserved for overlapping dates
+     * @throws IllegalArgumentException if any parameter is null
+     */
+    public static int countOverlappingReservations(List&lt;Reservation&gt; existingReservations,
+                                                   RoomType roomType,
+                                                   LocalDate checkInDate,
+                                                   LocalDate checkOutDate) {
+<span class="fc bfc" id="L160" title="All 2 branches covered.">        if (existingReservations == null) {</span>
+<span class="fc" id="L161">            throw new IllegalArgumentException(&quot;Reservations list cannot be null&quot;);</span>
+        }
+<span class="fc bfc" id="L163" title="All 2 branches covered.">        if (roomType == null) {</span>
+<span class="fc" id="L164">            throw new IllegalArgumentException(&quot;Room type cannot be null&quot;);</span>
+        }
+<span class="pc bpc" id="L166" title="1 of 4 branches missed.">        if (checkInDate == null || checkOutDate == null) {</span>
+<span class="fc" id="L167">            throw new IllegalArgumentException(&quot;Dates cannot be null&quot;);</span>
+        }
+
+        // Get active reservations for this room type
+<span class="fc" id="L171">        List&lt;Reservation&gt; activeReservations = getActiveReservationsForRoomType(</span>
+                existingReservations, roomType);
+
+        // Count how many overlap with the requested dates
+<span class="fc" id="L175">        return (int) activeReservations.stream()</span>
+<span class="fc" id="L176">                .filter(reservation -&gt; {</span>
+<span class="fc" id="L177">                    LocalDate existingCheckIn = reservation.getCheckInDate();</span>
+<span class="fc" id="L178">                    LocalDate existingCheckOut = reservation.getCheckOutDate();</span>
+<span class="fc" id="L179">                    return DateValidator.doDateRangesOverlap(</span>
+                            existingCheckIn, existingCheckOut, checkInDate, checkOutDate);
+                })
+<span class="fc" id="L182">                .count();</span>
+    }
+
+    /**
+     * Checks if a room of the specified type is available for the given dates.
+     *
+     * @param existingReservations list of all existing reservations
+     * @param roomType the type of room to check
+     * @param checkInDate the check-in date
+     * @param checkOutDate the check-out date
+     * @return true if at least one room is available, false if fully booked
+     * @throws IllegalArgumentException if any parameter is null
+     */
+    public static boolean isRoomAvailable(List&lt;Reservation&gt; existingReservations,
+                                          RoomType roomType,
+                                          LocalDate checkInDate,
+                                          LocalDate checkOutDate) {
+<span class="fc bfc" id="L199" title="All 2 branches covered.">        if (existingReservations == null) {</span>
+<span class="fc" id="L200">            throw new IllegalArgumentException(&quot;Reservations list cannot be null&quot;);</span>
+        }
+<span class="fc bfc" id="L202" title="All 2 branches covered.">        if (roomType == null) {</span>
+<span class="fc" id="L203">            throw new IllegalArgumentException(&quot;Room type cannot be null&quot;);</span>
+        }
+<span class="pc bpc" id="L205" title="1 of 4 branches missed.">        if (checkInDate == null || checkOutDate == null) {</span>
+<span class="fc" id="L206">            throw new IllegalArgumentException(&quot;Dates cannot be null&quot;);</span>
+        }
+
+<span class="fc" id="L209">        int capacity = getRoomCapacity(roomType);</span>
+<span class="fc" id="L210">        int overlappingReservations = countOverlappingReservations(</span>
+                existingReservations, roomType, checkInDate, checkOutDate);
+
+<span class="fc bfc" id="L213" title="All 2 branches covered.">        return overlappingReservations &lt; capacity;</span>
+    }
+
+    /**
+     * Gets the number of rooms still available for a specific type and date range.
+     *
+     * @param existingReservations list of all existing reservations
+     * @param roomType the type of room to check
+     * @param checkInDate the check-in date
+     * @param checkOutDate the check-out date
+     * @return the number of rooms available (0 if fully booked)
+     * @throws IllegalArgumentException if any parameter is null
+     */
+    public static int getAvailableRoomCount(List&lt;Reservation&gt; existingReservations,
+                                            RoomType roomType,
+                                            LocalDate checkInDate,
+                                            LocalDate checkOutDate) {
+<span class="pc bpc" id="L230" title="1 of 2 branches missed.">        if (existingReservations == null) {</span>
+<span class="nc" id="L231">            throw new IllegalArgumentException(&quot;Reservations list cannot be null&quot;);</span>
+        }
+<span class="pc bpc" id="L233" title="1 of 2 branches missed.">        if (roomType == null) {</span>
+<span class="nc" id="L234">            throw new IllegalArgumentException(&quot;Room type cannot be null&quot;);</span>
+        }
+<span class="pc bpc" id="L236" title="1 of 4 branches missed.">        if (checkInDate == null || checkOutDate == null) {</span>
+<span class="fc" id="L237">            throw new IllegalArgumentException(&quot;Dates cannot be null&quot;);</span>
+        }
+
+<span class="fc" id="L240">        int capacity = getRoomCapacity(roomType);</span>
+<span class="fc" id="L241">        int overlappingReservations = countOverlappingReservations(</span>
+                existingReservations, roomType, checkInDate, checkOutDate);
+
+<span class="fc" id="L244">        return Math.max(0, capacity - overlappingReservations);</span>
+    }
+
+    /**
+     * Checks availability for all room types and returns a report.
+     *
+     * @param existingReservations list of all existing reservations
+     * @param checkInDate the check-in date
+     * @param checkOutDate the check-out date
+     * @return an AvailabilityReport containing availability for all room types
+     * @throws IllegalArgumentException if any parameter is null
+     */
+    public static AvailabilityReport getAvailabilityReport(List&lt;Reservation&gt; existingReservations,
+                                                           LocalDate checkInDate,
+                                                           LocalDate checkOutDate) {
+<span class="pc bpc" id="L259" title="1 of 2 branches missed.">        if (existingReservations == null) {</span>
+<span class="nc" id="L260">            throw new IllegalArgumentException(&quot;Reservations list cannot be null&quot;);</span>
+        }
+<span class="pc bpc" id="L262" title="1 of 4 branches missed.">        if (checkInDate == null || checkOutDate == null) {</span>
+<span class="fc" id="L263">            throw new IllegalArgumentException(&quot;Dates cannot be null&quot;);</span>
+        }
+
+<span class="fc" id="L266">        AvailabilityReport report = new AvailabilityReport(checkInDate, checkOutDate);</span>
+
+<span class="fc bfc" id="L268" title="All 2 branches covered.">        for (RoomType roomType : RoomType.values()) {</span>
+<span class="fc" id="L269">            int available = getAvailableRoomCount(</span>
+                    existingReservations, roomType, checkInDate, checkOutDate);
+<span class="fc" id="L271">            int capacity = getRoomCapacity(roomType);</span>
+<span class="fc" id="L272">            report.addRoomTypeAvailability(roomType, available, capacity);</span>
+        }
+
+<span class="fc" id="L275">        return report;</span>
+    }
+
+    /**
+     * Validates that a new reservation can be created without conflicts.
+     * This method checks both date validity and room availability.
+     *
+     * @param existingReservations list of all existing reservations
+     * @param roomType the type of room being requested
+     * @param checkInDate the check-in date
+     * @param checkOutDate the check-out date
+     * @return a ValidationResult indicating if the reservation is valid
+     * @throws IllegalArgumentException if any parameter is null
+     */
+    public static ValidationResult validateNewReservation(List&lt;Reservation&gt; existingReservations,
+                                                          RoomType roomType,
+                                                          LocalDate checkInDate,
+                                                          LocalDate checkOutDate) {
+<span class="pc bpc" id="L293" title="1 of 2 branches missed.">        if (existingReservations == null) {</span>
+<span class="nc" id="L294">            throw new IllegalArgumentException(&quot;Reservations list cannot be null&quot;);</span>
+        }
+<span class="pc bpc" id="L296" title="1 of 2 branches missed.">        if (roomType == null) {</span>
+<span class="nc" id="L297">            throw new IllegalArgumentException(&quot;Room type cannot be null&quot;);</span>
+        }
+<span class="pc bpc" id="L299" title="1 of 4 branches missed.">        if (checkInDate == null || checkOutDate == null) {</span>
+<span class="fc" id="L300">            throw new IllegalArgumentException(&quot;Dates cannot be null&quot;);</span>
+        }
+
+        // First check date validity
+<span class="fc bfc" id="L304" title="All 2 branches covered.">        if (!DateValidator.isValidDateRange(checkInDate, checkOutDate)) {</span>
+<span class="fc" id="L305">            String dateError = DateValidator.getDateValidationMessage(checkInDate, checkOutDate);</span>
+<span class="fc" id="L306">            return new ValidationResult(false, dateError);</span>
+        }
+
+        // Then check room availability
+<span class="fc bfc" id="L310" title="All 2 branches covered.">        if (!isRoomAvailable(existingReservations, roomType, checkInDate, checkOutDate)) {</span>
+<span class="fc" id="L311">            int available = getAvailableRoomCount(existingReservations, roomType,</span>
+                    checkInDate, checkOutDate);
+<span class="fc" id="L313">            String message = String.format(</span>
+                    &quot;No %s rooms available for the selected dates. Available: %d&quot;,
+<span class="fc" id="L315">                    roomType, available);</span>
+<span class="fc" id="L316">            return new ValidationResult(false, message);</span>
+        }
+
+<span class="fc" id="L319">        return new ValidationResult(true, &quot;Reservation can be created&quot;);</span>
+    }
+
+    /**
+     * Inner class representing an availability report for all room types.
+     */
+    public static class AvailabilityReport {
+        private final LocalDate checkInDate;
+        private final LocalDate checkOutDate;
+        private final StringBuilder report;
+
+        /**
+         * Constructor for AvailabilityReport.
+         *
+         * @param checkInDate the check-in date for this report
+         * @param checkOutDate the check-out date for this report
+         */
+<span class="fc" id="L336">        public AvailabilityReport(LocalDate checkInDate, LocalDate checkOutDate) {</span>
+<span class="fc" id="L337">            this.checkInDate = checkInDate;</span>
+<span class="fc" id="L338">            this.checkOutDate = checkOutDate;</span>
+<span class="fc" id="L339">            this.report = new StringBuilder();</span>
+<span class="fc" id="L340">            report.append(String.format(&quot;Availability Report for %s to %s:\n\n&quot;,</span>
+                    checkInDate, checkOutDate));
+<span class="fc" id="L342">        }</span>
+
+        /**
+         * Adds availability information for a specific room type.
+         *
+         * @param roomType the room type
+         * @param available number of rooms available
+         * @param capacity total capacity for this room type
+         */
+        public void addRoomTypeAvailability(RoomType roomType, int available, int capacity) {
+<span class="pc bpc" id="L352" title="1 of 2 branches missed.">            String status = available &gt; 0 ? &quot;Available&quot; : &quot;Fully Booked&quot;;</span>
+<span class="fc" id="L353">            report.append(String.format(&quot;  %-10s: %d/%d rooms available - %s\n&quot;,</span>
+<span class="fc" id="L354">                    roomType, available, capacity, status));</span>
+<span class="fc" id="L355">        }</span>
+
+        @Override
+        public String toString() {
+<span class="fc" id="L359">            return report.toString();</span>
+        }
+    }
+
+    /**
+     * Inner class representing the result of a validation check.
+     */
+    public static class ValidationResult {
+        private final boolean valid;
+        private final String message;
+
+        /**
+         * Constructor for ValidationResult.
+         *
+         * @param valid whether the validation passed
+         * @param message descriptive message about the validation result
+         */
+<span class="fc" id="L376">        public ValidationResult(boolean valid, String message) {</span>
+<span class="fc" id="L377">            this.valid = valid;</span>
+<span class="fc" id="L378">            this.message = message;</span>
+<span class="fc" id="L379">        }</span>
+
+        /**
+         * Gets whether the validation was successful.
+         *
+         * @return true if valid, false otherwise
+         */
+        public boolean isValid() {
+<span class="fc" id="L387">            return valid;</span>
+        }
+
+        /**
+         * Gets the validation message.
+         *
+         * @return the descriptive message
+         */
+        public String getMessage() {
+<span class="fc" id="L396">            return message;</span>
+        }
+
+        @Override
+        public String toString() {
+<span class="nc" id="L401">            return String.format(&quot;Valid: %s - %s&quot;, valid, message);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
