@@ -258,27 +258,35 @@ bookingmx-testing-challenge/
 │   │   └── resources/
 │   │       └── templates/
 │   │           └── hello.mustache (existing)
-│   └── test/
-│       └── java/
-│           └── com/
-│               └── bookingmx/
-│                   └── reservation/
-│                       ├── model/
-│                       │   └── ReservationTest.java
-│                       ├── repository/
-│                       │   └── InMemoryReservationRepositoryTest.java
-│                       ├── service/
-│                       │   └── ReservationServiceTest.java
-│                       └── util/
-│                           ├── AvailabilityCheckerTest.java
-│                           ├── DateValidatorTest.java
-│                           └── PriceCalculatorTest.java
+│   ├── test/
+│   │   └── java/
+│   │       └── com/
+│   │           └── bookingmx/
+│   │               └── reservation/
+│   │                   ├── model/
+│   │                   │   └── ReservationTest.java
+│   │                   ├── repository/
+│   │                   │   └── InMemoryReservationRepositoryTest.java
+│   │                   ├── service/
+│   │                   │   └── ReservationServiceTest.java
+│   │                   └── util/
+│   │                       ├── AvailabilityCheckerTest.java
+│   │                       ├── DateValidatorTest.java
+│   │                       └── PriceCalculatorTest.java
+│   └── javascript/
+│        ├── Graph/
+│        │   ├── Graph.js   
+│        │   └── Graph.test.js
+│        ├── utils/
+│        └── README.md
+│              
 ├── target/
 │   └── site/
 │       └── jacoco/
 │           └── index.html (coverage report)
 ├── screenshots/
-│   └── sprint1/
+│   ├── sprint1/
+│   └── sprint2/
 ├── pom.xml
 ├── README.md
 └── .gitignore
