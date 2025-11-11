@@ -8,6 +8,7 @@ TESTING_NOTES.md
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+frontend/node_modules/
 
 # Node.js
 node_modules/
@@ -25,3 +26,4 @@ coverage/
 
 # IDE - VS Code
 .vscode/
+*.iml
