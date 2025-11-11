@@ -8,3 +8,20 @@ TESTING_NOTES.md
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Jest Coverage
+coverage/
+*.lcov
+
+# Environment files
+.env
+.env.local
+
+# IDE - VS Code
+.vscode/

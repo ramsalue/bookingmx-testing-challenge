@@ -1,0 +1,39 @@
+{
+  "name": "bookingmx-testing-challenge",
+  "version": "2.0.0",
+  "description": "BookingMx Reservation System with Unit Testing - Sprint 2: JavaScript Graph Module",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:verbose": "jest --verbose"
+  },
+  "keywords": ["bookingmx", "jest", "testing", "graph", "dijkstra"],
+  "author": "Luis E Ramirez",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "jest": {
+    "roots": ["<rootDir>/src"],
+    "testEnvironment": "node",
+    "coverageDirectory": "coverage",
+    "collectCoverageFrom": [
+      "src/javascript/**/*.js",
+      "!src/javascript/**/*.test.js",
+      "!**/node_modules/**"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 90,
+        "functions": 90,
+        "lines": 90,
+        "statements": 90
+      }
+    },
+    "testMatch": [
+      "**/src/javascript/**/*.test.js"
+    ]
+  }
+}
