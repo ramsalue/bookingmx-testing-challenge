@@ -71,12 +71,38 @@ The primary objective is to demonstrate proficiency in:
 - **Search & Filter**: By guest name, email, status, room type, date range
 
 ### Technical Features
-- **100+ Unit Tests**: Comprehensive test coverage
 - **91% Code Coverage**: Verified with JaCoCo
 - **Thread-Safe**: Concurrent data access using ConcurrentHashMap
 - **Exception Handling**: Custom exceptions with meaningful messages
 - **Repository Pattern**: Abstraction for easy database migration
 - **Clean Architecture**: Separation of concerns across layers
+
+
+##  Sprint 2: JavaScript Graph Module (Complete)
+
+### Overview
+Sprint 2 implements a graph data structure in JavaScript to represent cities and their distances. The module helps BookingMx customers visualize nearby destinations and calculate optimal travel routes.
+
+### Features Implemented
+- **Graph Data Structure**: Adjacency list implementation using JavaScript Map
+- **City Management**: Add, remove, and query cities and connections
+- **Dijkstra's Algorithm**: Find shortest path between any two cities
+- **Nearby Cities Search**: Find all cities within a specified distance
+- **Distance Calculations**: Calculate routes and distances
+- **Comprehensive Jest Tests**: 71 tests with 95%+ coverage
+
+### Technologies
+- **JavaScript (ES6+)**: Modern JavaScript features
+- **Node.js**: Runtime environment
+- **Jest**: Testing framework with built-in coverage
+- **npm**: Package management
+
+### Test Coverage - Sprint 2
+| Module | Coverage |
+|--------|----------|
+| Graph.js | 99%      |
+| **Overall** | **99%**  |
+
 
 ---
 

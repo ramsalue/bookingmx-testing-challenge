@@ -194,7 +194,7 @@ class AvailabilityCheckerTest {
         Reservation res1 = new Reservation(
                 "Guest 1",
                 "guest1@example.com",
-                LocalDate.of(2025, 11, 10),
+                LocalDate.of(2025, 11, 11),
                 LocalDate.of(2025, 11, 15),
                 RoomType.DOUBLE
         );
@@ -218,7 +218,7 @@ class AvailabilityCheckerTest {
         Reservation res1 = new Reservation(
                 "Guest 1",
                 "guest1@example.com",
-                LocalDate.of(2025, 11, 10),
+                LocalDate.of(2025, 11, 11),
                 LocalDate.of(2025, 11, 15),
                 RoomType.DOUBLE
         );

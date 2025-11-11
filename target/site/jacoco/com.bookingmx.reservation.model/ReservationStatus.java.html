@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReservationStatus.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookingmx-testing-challenge</a> &gt; <a href="index.source.html" class="el_package">com.bookingmx.reservation.model</a> &gt; <span class="el_source">ReservationStatus.java</span></div><h1>ReservationStatus.java</h1><pre class="source lang-java linenums">package com.bookingmx.reservation.model;
+
+/**
+ * Enumeration representing the possible states of a reservation.
+ * Used to track the lifecycle of a reservation from creation to completion or cancellation.
+ *
+ * @author BookingMx Development Team
+ * @version 1.0.0
+ */
+<span class="fc" id="L10">public enum ReservationStatus {</span>
+
+    /**
+     * Reservation has been created but not yet confirmed by payment.
+     */
+<span class="fc" id="L15">    PENDING,</span>
+
+    /**
+     * Reservation has been confirmed and payment received.
+     */
+<span class="fc" id="L20">    CONFIRMED,</span>
+
+    /**
+     * Guest has checked in and is currently staying at the hotel.
+     */
+<span class="fc" id="L25">    CHECKED_IN,</span>
+
+    /**
+     * Guest has checked out and the reservation is complete.
+     */
+<span class="fc" id="L30">    COMPLETED,</span>
+
+    /**
+     * Reservation has been cancelled by the guest or hotel.
+     */
+<span class="fc" id="L35">    CANCELLED</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
