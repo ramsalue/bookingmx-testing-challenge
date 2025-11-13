@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReservationService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bookingmx-testing-challenge</a> &gt; <a href="index.source.html" class="el_package">com.bookingmx.reservation.service</a> &gt; <span class="el_source">ReservationService.java</span></div><h1>ReservationService.java</h1><pre class="source lang-java linenums">package com.bookingmx.reservation.service;
+
+import com.bookingmx.reservation.exception.InvalidReservationException;
+import com.bookingmx.reservation.exception.ReservationNotFoundException;
+import com.bookingmx.reservation.model.Reservation;
+import com.bookingmx.reservation.model.ReservationStatus;
+import com.bookingmx.reservation.model.RoomType;
+import com.bookingmx.reservation.repository.ReservationRepository;
+import com.bookingmx.reservation.util.AvailabilityChecker;
+import com.bookingmx.reservation.util.DateValidator;
+import com.bookingmx.reservation.util.PriceCalculator;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * Service layer for managing hotel reservations.
+ * This class orchestrates the business logic for creating, updating, canceling,
+ * and searching reservations. It integrates all utility classes and the repository
+ * to provide a comprehensive reservation management system.
+ *
+ * This service handles:
+ * - Reservation creation with validation
+ * - Availability checking before booking
+ * - Price calculation with discounts
+ * - Reservation cancellation and confirmation
+ * - Search and filtering operations
+ *
+ * @author BookingMx Development Team
+ * @version 1.0.0
+ */
+public class ReservationService {
+
+    private final ReservationRepository repository;
+
+    /**
+     * Constructor that initializes the service with a repository.
+     *
+     * @param repository the repository for data persistence
+     */
+<span class="fc" id="L42">    public ReservationService(ReservationRepository repository) {</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">        if (repository == null) {</span>
+<span class="fc" id="L44">            throw new IllegalArgumentException(&quot;Repository cannot be null&quot;);</span>
+        }
+<span class="fc" id="L46">        this.repository = repository;</span>
+<span class="fc" id="L47">    }</span>
+
+    /**
+     * Creates a new reservation with full validation.
+     * This method performs the following checks:
+     * 1. Validates guest information
+     * 2. Validates date range
+     * 3. Checks room availability
+     * 4. Calculates price with discounts
+     * 5. Saves the reservation
+     *
+     * @param guestName the name of the guest
+     * @param guestEmail the email of the guest
+     * @param checkInDate the check-in date
+     * @param checkOutDate the check-out date
+     * @param roomType the type of room requested
+     * @return the created reservation
+     * @throws InvalidReservationException if validation fails or room is not available
+     */
+    public Reservation createReservation(String guestName, String guestEmail,
+                                         LocalDate checkInDate, LocalDate checkOutDate,
+                                         RoomType roomType) throws InvalidReservationException {
+        // Validate guest information
+<span class="fc" id="L70">        validateGuestInfo(guestName, guestEmail);</span>
+
+        // Validate dates
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        if (!DateValidator.isValidDateRange(checkInDate, checkOutDate)) {</span>
+<span class="fc" id="L74">            String errorMessage = DateValidator.getDateValidationMessage(checkInDate, checkOutDate);</span>
+<span class="fc" id="L75">            throw new InvalidReservationException(errorMessage);</span>
+        }
+
+        // Check room availability
+<span class="fc" id="L79">        List&lt;Reservation&gt; existingReservations = repository.findAll();</span>
+<span class="fc" id="L80">        AvailabilityChecker.ValidationResult validationResult =</span>
+<span class="fc" id="L81">                AvailabilityChecker.validateNewReservation(existingReservations, roomType,</span>
+                        checkInDate, checkOutDate);
+
+<span class="fc bfc" id="L84" title="All 2 branches covered.">        if (!validationResult.isValid()) {</span>
+<span class="fc" id="L85">            throw new InvalidReservationException(validationResult.getMessage());</span>
+        }
+
+        // Create reservation with calculated price
+<span class="fc" id="L89">        double totalPrice = PriceCalculator.calculateTotalPrice(roomType, checkInDate, checkOutDate);</span>
+<span class="fc" id="L90">        Reservation reservation = new Reservation(guestName, guestEmail, checkInDate,</span>
+                checkOutDate, roomType, totalPrice);
+
+        // Save and return
+<span class="fc" id="L94">        return repository.save(reservation);</span>
+    }
+
+    /**
+     * Validates guest information (name and email).
+     *
+     * @param guestName the guest name to validate
+     * @param guestEmail the guest email to validate
+     * @throws InvalidReservationException if validation fails
+     */
+    private void validateGuestInfo(String guestName, String guestEmail)
+            throws InvalidReservationException {
+<span class="fc bfc" id="L106" title="All 4 branches covered.">        if (guestName == null || guestName.trim().isEmpty()) {</span>
+<span class="fc" id="L107">            throw new InvalidReservationException(&quot;Guest name is required&quot;);</span>
+        }
+<span class="pc bpc" id="L109" title="2 of 4 branches missed.">        if (guestEmail == null || guestEmail.trim().isEmpty()) {</span>
+<span class="nc" id="L110">            throw new InvalidReservationException(&quot;Guest email is required&quot;);</span>
+        }
+<span class="fc bfc" id="L112" title="All 2 branches covered.">        if (!guestEmail.matches(&quot;^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$&quot;)) {</span>
+<span class="fc" id="L113">            throw new InvalidReservationException(&quot;Invalid email format&quot;);</span>
+        }
+<span class="fc" id="L115">    }</span>
+
+    /**
+     * Finds a reservation by its ID.
+     *
+     * @param reservationId the ID of the reservation to find
+     * @return the reservation if found
+     * @throws ReservationNotFoundException if no reservation exists with the given ID
+     */
+    public Reservation findReservationById(String reservationId)
+            throws ReservationNotFoundException {
+<span class="fc" id="L126">        return repository.findById(reservationId)</span>
+<span class="fc" id="L127">                .orElseThrow(() -&gt; new ReservationNotFoundException(</span>
+                        &quot;Reservation not found with ID: &quot; + reservationId));
+    }
+
+    /**
+     * Retrieves all reservations in the system.
+     *
+     * @return a list of all reservations
+     */
+    public List&lt;Reservation&gt; getAllReservations() {
+<span class="fc" id="L137">        return repository.findAll();</span>
+    }
+
+    /**
+     * Confirms a pending reservation.
+     * Only reservations in PENDING status can be confirmed.
+     *
+     * @param reservationId the ID of the reservation to confirm
+     * @return the confirmed reservation
+     * @throws ReservationNotFoundException if reservation doesn't exist
+     * @throws InvalidReservationException if reservation cannot be confirmed
+     */
+    public Reservation confirmReservation(String reservationId)
+            throws ReservationNotFoundException, InvalidReservationException {
+<span class="fc" id="L151">        Reservation reservation = findReservationById(reservationId);</span>
+<span class="fc" id="L152">        reservation.confirm();</span>
+<span class="fc" id="L153">        return repository.update(reservation);</span>
+    }
+
+    /**
+     * Cancels an existing reservation.
+     *
+     * @param reservationId the ID of the reservation to cancel
+     * @return the cancelled reservation
+     * @throws ReservationNotFoundException if reservation doesn't exist
+     * @throws InvalidReservationException if reservation cannot be cancelled
+     */
+    public Reservation cancelReservation(String reservationId)
+            throws ReservationNotFoundException, InvalidReservationException {
+<span class="fc" id="L166">        Reservation reservation = findReservationById(reservationId);</span>
+<span class="fc" id="L167">        reservation.cancel();</span>
+<span class="fc" id="L168">        return repository.update(reservation);</span>
+    }
+
+    /**
+     * Updates a reservation's dates.
+     * This method checks availability for the new dates before updating.
+     *
+     * @param reservationId the ID of the reservation to update
+     * @param newCheckInDate the new check-in date
+     * @param newCheckOutDate the new check-out date
+     * @return the updated reservation
+     * @throws ReservationNotFoundException if reservation doesn't exist
+     * @throws InvalidReservationException if new dates are invalid or room not available
+     */
+    public Reservation updateReservationDates(String reservationId,
+                                              LocalDate newCheckInDate,
+                                              LocalDate newCheckOutDate)
+            throws ReservationNotFoundException, InvalidReservationException {
+<span class="fc" id="L186">        Reservation reservation = findReservationById(reservationId);</span>
+
+        // Validate new dates
+<span class="fc bfc" id="L189" title="All 2 branches covered.">        if (!DateValidator.isValidDateRange(newCheckInDate, newCheckOutDate)) {</span>
+<span class="fc" id="L190">            String errorMessage = DateValidator.getDateValidationMessage(newCheckInDate, newCheckOutDate);</span>
+<span class="fc" id="L191">            throw new InvalidReservationException(errorMessage);</span>
+        }
+
+        // Check availability for new dates (excluding this reservation)
+<span class="fc" id="L195">        List&lt;Reservation&gt; otherReservations = repository.findAll().stream()</span>
+<span class="pc bpc" id="L196" title="1 of 2 branches missed.">                .filter(r -&gt; !r.getId().equals(reservationId))</span>
+<span class="fc" id="L197">                .collect(Collectors.toList());</span>
+
+<span class="fc" id="L199">        AvailabilityChecker.ValidationResult validationResult =</span>
+<span class="fc" id="L200">                AvailabilityChecker.validateNewReservation(otherReservations,</span>
+<span class="fc" id="L201">                        reservation.getRoomType(),</span>
+                        newCheckInDate, newCheckOutDate);
+
+<span class="pc bpc" id="L204" title="1 of 2 branches missed.">        if (!validationResult.isValid()) {</span>
+<span class="nc" id="L205">            throw new InvalidReservationException(validationResult.getMessage());</span>
+        }
+
+        // Update dates and recalculate price
+<span class="fc" id="L209">        reservation.setCheckInDate(newCheckInDate);</span>
+<span class="fc" id="L210">        reservation.setCheckOutDate(newCheckOutDate);</span>
+<span class="fc" id="L211">        double newPrice = PriceCalculator.calculateTotalPrice(</span>
+<span class="fc" id="L212">                reservation.getRoomType(), newCheckInDate, newCheckOutDate);</span>
+<span class="fc" id="L213">        reservation.setTotalPrice(newPrice);</span>
+
+<span class="fc" id="L215">        return repository.update(reservation);</span>
+    }
+
+    /**
+     * Searches for reservations by guest name.
+     *
+     * @param guestName the name to search for (case-insensitive, partial match)
+     * @return list of matching reservations
+     */
+    public List&lt;Reservation&gt; findReservationsByGuestName(String guestName) {
+<span class="fc bfc" id="L225" title="All 4 branches covered.">        if (guestName == null || guestName.trim().isEmpty()) {</span>
+<span class="fc" id="L226">            return List.of();</span>
+        }
+
+<span class="fc" id="L229">        String searchTerm = guestName.toLowerCase();</span>
+<span class="fc" id="L230">        return repository.findAll().stream()</span>
+<span class="fc" id="L231">                .filter(r -&gt; r.getGuestName().toLowerCase().contains(searchTerm))</span>
+<span class="fc" id="L232">                .collect(Collectors.toList());</span>
+    }
+
+    /**
+     * Searches for reservations by guest email.
+     *
+     * @param guestEmail the email to search for (case-insensitive)
+     * @return list of matching reservations
+     */
+    public List&lt;Reservation&gt; findReservationsByGuestEmail(String guestEmail) {
+<span class="fc bfc" id="L242" title="All 4 branches covered.">        if (guestEmail == null || guestEmail.trim().isEmpty()) {</span>
+<span class="fc" id="L243">            return List.of();</span>
+        }
+
+<span class="fc" id="L246">        String searchTerm = guestEmail.toLowerCase();</span>
+<span class="fc" id="L247">        return repository.findAll().stream()</span>
+<span class="fc" id="L248">                .filter(r -&gt; r.getGuestEmail().toLowerCase().equals(searchTerm))</span>
+<span class="fc" id="L249">                .collect(Collectors.toList());</span>
+    }
+
+    /**
+     * Finds all reservations with a specific status.
+     *
+     * @param status the status to filter by
+     * @return list of reservations with the given status
+     */
+    public List&lt;Reservation&gt; findReservationsByStatus(ReservationStatus status) {
+<span class="fc bfc" id="L259" title="All 2 branches covered.">        if (status == null) {</span>
+<span class="fc" id="L260">            return List.of();</span>
+        }
+
+<span class="fc" id="L263">        return repository.findAll().stream()</span>
+<span class="fc bfc" id="L264" title="All 2 branches covered.">                .filter(r -&gt; r.getStatus() == status)</span>
+<span class="fc" id="L265">                .collect(Collectors.toList());</span>
+    }
+
+    /**
+     * Finds all reservations for a specific room type.
+     *
+     * @param roomType the room type to filter by
+     * @return list of reservations for the given room type
+     */
+    public List&lt;Reservation&gt; findReservationsByRoomType(RoomType roomType) {
+<span class="fc bfc" id="L275" title="All 2 branches covered.">        if (roomType == null) {</span>
+<span class="fc" id="L276">            return List.of();</span>
+        }
+
+<span class="fc" id="L279">        return repository.findAll().stream()</span>
+<span class="fc bfc" id="L280" title="All 2 branches covered.">                .filter(r -&gt; r.getRoomType() == roomType)</span>
+<span class="fc" id="L281">                .collect(Collectors.toList());</span>
+    }
+
+    /**
+     * Finds all reservations that overlap with a given date range.
+     * Useful for finding potential conflicts or occupancy reports.
+     *
+     * @param checkInDate the start date of the range
+     * @param checkOutDate the end date of the range
+     * @return list of reservations that overlap with the date range
+     */
+    public List&lt;Reservation&gt; findReservationsForDateRange(LocalDate checkInDate,
+                                                          LocalDate checkOutDate) {
+<span class="fc bfc" id="L294" title="All 4 branches covered.">        if (checkInDate == null || checkOutDate == null) {</span>
+<span class="fc" id="L295">            return List.of();</span>
+        }
+
+<span class="fc" id="L298">        return repository.findAll().stream()</span>
+<span class="fc" id="L299">                .filter(r -&gt; DateValidator.doDateRangesOverlap(</span>
+<span class="fc" id="L300">                        r.getCheckInDate(), r.getCheckOutDate(), checkInDate, checkOutDate))</span>
+<span class="fc" id="L301">                .collect(Collectors.toList());</span>
+    }
+
+    /**
+     * Gets availability report for a specific date range.
+     *
+     * @param checkInDate the check-in date
+     * @param checkOutDate the check-out date
+     * @return an AvailabilityReport showing availability for all room types
+     */
+    public AvailabilityChecker.AvailabilityReport getAvailabilityReport(
+            LocalDate checkInDate, LocalDate checkOutDate) {
+<span class="nc" id="L313">        List&lt;Reservation&gt; allReservations = repository.findAll();</span>
+<span class="nc" id="L314">        return AvailabilityChecker.getAvailabilityReport(</span>
+                allReservations, checkInDate, checkOutDate);
+    }
+
+    /**
+     * Checks if a specific room type is available for given dates.
+     *
+     * @param roomType the room type to check
+     * @param checkInDate the check-in date
+     * @param checkOutDate the check-out date
+     * @return true if at least one room is available, false otherwise
+     */
+    public boolean isRoomAvailable(RoomType roomType, LocalDate checkInDate,
+                                   LocalDate checkOutDate) {
+<span class="fc" id="L328">        List&lt;Reservation&gt; allReservations = repository.findAll();</span>
+<span class="fc" id="L329">        return AvailabilityChecker.isRoomAvailable(</span>
+                allReservations, roomType, checkInDate, checkOutDate);
+    }
+
+    /**
+     * Gets the number of available rooms for a specific type and date range.
+     *
+     * @param roomType the room type to check
+     * @param checkInDate the check-in date
+     * @param checkOutDate the check-out date
+     * @return the number of available rooms
+     */
+    public int getAvailableRoomCount(RoomType roomType, LocalDate checkInDate,
+                                     LocalDate checkOutDate) {
+<span class="fc" id="L343">        List&lt;Reservation&gt; allReservations = repository.findAll();</span>
+<span class="fc" id="L344">        return AvailabilityChecker.getAvailableRoomCount(</span>
+                allReservations, roomType, checkInDate, checkOutDate);
+    }
+
+    /**
+     * Calculates a price quote for a potential reservation without creating it.
+     *
+     * @param roomType the room type
+     * @param checkInDate the check-in date
+     * @param checkOutDate the check-out date
+     * @return a PriceBreakdown showing detailed pricing information
+     * @throws InvalidReservationException if dates are invalid
+     */
+    public PriceCalculator.PriceBreakdown getPriceQuote(RoomType roomType,
+                                                        LocalDate checkInDate,
+                                                        LocalDate checkOutDate)
+            throws InvalidReservationException {
+<span class="pc bpc" id="L361" title="1 of 2 branches missed.">        if (roomType == null) {</span>
+<span class="nc" id="L362">            throw new InvalidReservationException(&quot;Room type is required&quot;);</span>
+        }
+
+<span class="pc bpc" id="L365" title="1 of 2 branches missed.">        if (!DateValidator.isValidDateRange(checkInDate, checkOutDate)) {</span>
+<span class="nc" id="L366">            String errorMessage = DateValidator.getDateValidationMessage(checkInDate, checkOutDate);</span>
+<span class="nc" id="L367">            throw new InvalidReservationException(errorMessage);</span>
+        }
+
+<span class="fc" id="L370">        long nights = DateValidator.calculateNights(checkInDate, checkOutDate);</span>
+<span class="fc" id="L371">        return PriceCalculator.getPriceBreakdown(roomType, nights);</span>
+    }
+
+    /**
+     * Gets count of reservations grouped by status.
+     * Useful for dashboard and reporting.
+     *
+     * @return a string summary of reservation counts by status
+     */
+    public String getReservationSummary() {
+<span class="fc" id="L381">        List&lt;Reservation&gt; allReservations = repository.findAll();</span>
+
+<span class="fc" id="L383">        long pending = allReservations.stream()</span>
+<span class="fc bfc" id="L384" title="All 2 branches covered.">                .filter(r -&gt; r.getStatus() == ReservationStatus.PENDING)</span>
+<span class="fc" id="L385">                .count();</span>
+<span class="fc" id="L386">        long confirmed = allReservations.stream()</span>
+<span class="fc bfc" id="L387" title="All 2 branches covered.">                .filter(r -&gt; r.getStatus() == ReservationStatus.CONFIRMED)</span>
+<span class="fc" id="L388">                .count();</span>
+<span class="fc" id="L389">        long checkedIn = allReservations.stream()</span>
+<span class="pc bpc" id="L390" title="1 of 2 branches missed.">                .filter(r -&gt; r.getStatus() == ReservationStatus.CHECKED_IN)</span>
+<span class="fc" id="L391">                .count();</span>
+<span class="fc" id="L392">        long completed = allReservations.stream()</span>
+<span class="pc bpc" id="L393" title="1 of 2 branches missed.">                .filter(r -&gt; r.getStatus() == ReservationStatus.COMPLETED)</span>
+<span class="fc" id="L394">                .count();</span>
+<span class="fc" id="L395">        long cancelled = allReservations.stream()</span>
+<span class="pc bpc" id="L396" title="1 of 2 branches missed.">                .filter(r -&gt; r.getStatus() == ReservationStatus.CANCELLED)</span>
+<span class="fc" id="L397">                .count();</span>
+
+<span class="fc" id="L399">        return String.format(</span>
+                &quot;Reservation Summary:\n&quot; +
+                        &quot;  Total: %d\n&quot; +
+                        &quot;  Pending: %d\n&quot; +
+                        &quot;  Confirmed: %d\n&quot; +
+                        &quot;  Checked In: %d\n&quot; +
+                        &quot;  Completed: %d\n&quot; +
+                        &quot;  Cancelled: %d&quot;,
+<span class="fc" id="L407">                allReservations.size(), pending, confirmed, checkedIn, completed, cancelled</span>
+        );
+    }
+
+    /**
+     * Deletes a reservation from the system.
+     * Use with caution - this permanently removes the reservation.
+     *
+     * @param reservationId the ID of the reservation to delete
+     * @return true if deleted successfully, false if not found
+     */
+    public boolean deleteReservation(String reservationId) {
+<span class="fc" id="L419">        return repository.delete(reservationId);</span>
+    }
+
+    /**
+     * Gets the total count of reservations in the system.
+     *
+     * @return the total number of reservations
+     */
+    public int getTotalReservationCount() {
+<span class="fc" id="L428">        return repository.findAll().size();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

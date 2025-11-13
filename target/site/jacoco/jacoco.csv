@@ -1,0 +1,14 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+bookingmx-testing-challenge,com.bookingmx.reservation.util,PriceCalculator,20,237,4,36,4,59,4,29,0,13
+bookingmx-testing-challenge,com.bookingmx.reservation.util,PriceCalculator.PriceBreakdown,0,133,0,2,0,24,0,9,0,8
+bookingmx-testing-challenge,com.bookingmx.reservation.util,DateValidator,37,241,12,56,6,55,12,34,0,12
+bookingmx-testing-challenge,com.bookingmx.reservation.util,AvailabilityChecker.ValidationResult,16,15,0,0,1,6,1,3,1,3
+bookingmx-testing-challenge,com.bookingmx.reservation.util,AvailabilityChecker,27,336,11,58,6,79,11,37,0,12
+bookingmx-testing-challenge,com.bookingmx.reservation.util,AvailabilityChecker.AvailabilityReport,1,66,1,1,0,11,1,3,0,3
+bookingmx-testing-challenge,com.bookingmx.reservation.service,ReservationService,42,478,9,47,7,105,10,50,1,31
+bookingmx-testing-challenge,com.bookingmx.reservation.exception,ReservationNotFoundException,0,9,0,0,0,4,0,2,0,2
+bookingmx-testing-challenge,com.bookingmx.reservation.exception,InvalidReservationException,0,9,0,0,0,4,0,2,0,2
+bookingmx-testing-challenge,com.bookingmx.reservation.model,RoomType,0,42,0,0,0,9,0,3,0,3
+bookingmx-testing-challenge,com.bookingmx.reservation.model,Reservation,45,413,21,59,10,106,17,54,0,31
+bookingmx-testing-challenge,com.bookingmx.reservation.model,ReservationStatus,0,33,0,0,0,6,0,1,0,1
+bookingmx-testing-challenge,com.bookingmx.reservation.repository,InMemoryReservationRepository,5,155,6,22,1,32,6,18,0,10

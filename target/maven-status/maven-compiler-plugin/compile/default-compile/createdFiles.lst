@@ -1,0 +1,15 @@
+com\bookingmx\reservation\exception\InvalidReservationException.class
+com\bookingmx\reservation\model\ReservationStatus.class
+com\bookingmx\reservation\util\AvailabilityChecker.class
+com\bookingmx\reservation\util\DateValidator.class
+com\bookingmx\reservation\util\AvailabilityChecker$1.class
+com\bookingmx\reservation\model\RoomType.class
+com\bookingmx\reservation\model\Reservation.class
+com\bookingmx\reservation\util\AvailabilityChecker$ValidationResult.class
+com\bookingmx\reservation\repository\ReservationRepository.class
+com\bookingmx\reservation\repository\InMemoryReservationRepository.class
+com\bookingmx\reservation\util\AvailabilityChecker$AvailabilityReport.class
+com\bookingmx\reservation\util\PriceCalculator$PriceBreakdown.class
+com\bookingmx\reservation\exception\ReservationNotFoundException.class
+com\bookingmx\reservation\service\ReservationService.class
+com\bookingmx\reservation\util\PriceCalculator.class
