@@ -117,7 +117,7 @@ Sprint 2 implements a graph data structure in JavaScript to represent cities and
 ### Quick Links
 - **Java Coverage Report**: `target/site/jacoco/index.html`
 - **JavaScript Coverage Report**: `coverage/lcov-report/index.html`
-- **GitHub Repository**: [Your Repository URL]
+- **GitHub Repository**: https://github.com/ramsalue/bookingmx-testing-challenge/tree/sprint3
 
 ---
 
