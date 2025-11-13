@@ -421,7 +421,7 @@ CANCELLED (from PENDING, CONFIRMED, or CHECKED_IN)
 - **Date**: November 2025
 
 ---
-**Project Status**: Sprint 1 Completed 
+**Project Status**: Sprint 3 Completed 
 
-**Version**: 2.0.0  
+**Version**: 2.5.0  
 **Last Updated**: November 2025

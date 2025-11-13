@@ -1,4 +1,22 @@
 -------------------------------------------------------------------------------
 Test set: com.bookingmx.reservation.util.AvailabilityCheckerTest
 -------------------------------------------------------------------------------
-Tests run: 29, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.083 s -- in com.bookingmx.reservation.util.AvailabilityCheckerTest
+Tests run: 29, Failures: 0, Errors: 2, Skipped: 0, Time elapsed: 0.110 s <<< FAILURE! -- in com.bookingmx.reservation.util.AvailabilityCheckerTest
+com.bookingmx.reservation.util.AvailabilityCheckerTest.testDoReservationsOverlap -- Time elapsed: 0.010 s <<< ERROR!
+com.bookingmx.reservation.exception.InvalidReservationException: Check-in date cannot be in the past
+	at com.bookingmx.reservation.model.Reservation.validateReservationData(Reservation.java:134)
+	at com.bookingmx.reservation.model.Reservation.<init>(Reservation.java:59)
+	at com.bookingmx.reservation.util.AvailabilityCheckerTest.testDoReservationsOverlap(AvailabilityCheckerTest.java:198)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+
+com.bookingmx.reservation.util.AvailabilityCheckerTest.testDoReservationsNotOverlap -- Time elapsed: 0.001 s <<< ERROR!
+com.bookingmx.reservation.exception.InvalidReservationException: Check-in date cannot be in the past
+	at com.bookingmx.reservation.model.Reservation.validateReservationData(Reservation.java:134)
+	at com.bookingmx.reservation.model.Reservation.<init>(Reservation.java:59)
+	at com.bookingmx.reservation.util.AvailabilityCheckerTest.testDoReservationsNotOverlap(AvailabilityCheckerTest.java:222)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+
