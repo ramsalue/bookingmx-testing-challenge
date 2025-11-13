@@ -121,25 +121,6 @@ Sprint 2 implements a graph data structure in JavaScript to represent cities and
 
 ---
 
-## Project Status
-
-### Sprint 1: Java Reservations Module COMPLETE
-- **Coverage**: 92%+
-- **Tests**: 145+ passing
-- **Status**: Ready for evaluation
-
-### Sprint 2: JavaScript Graph Module COMPLETE
-- **Coverage**: 95%+
-- **Tests**: 60+ passing
-- **Status**: Ready for evaluation
-
-### Sprint 3: Documentation COMPLETE
-- **Documentation**: Complete
-- **Diagrams**: [Will be completed in Phase 2]
-- **Status**: In Progress
-
----
-
 ## Technologies Used
 
 - **Java 17**: Core programming language
